@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CloudWin 11</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: #080d18;
+      color: white;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 30px 16px;
+    }
+    header {
+      color: #55baff;
+      font-size: 28px;
+      font-weight: bold;
+      margin: 25px 0;
+    }
+    main {
+      max-width: 430px;
+      margin: 40px auto;
+      padding: 25px;
+      background: #131e32;
+      border: 1px solid #24466d;
+      border-radius: 18px;
+    }
+    .status { color: #ffbd59; margin: 20px; }
+    button {
+      display: block;
+      width: 100%;
+      padding: 16px;
+      margin-top: 14px;
+      border: 0;
+      border-radius: 10px;
+      background: #168cff;
+      color: white;
+      font-size: 17px;
+      font-weight: bold;
+    }
+    button.stop { background: #d94355; }
+    footer { color: #8192aa; margin-top: 35px; }
+  </style>
+</head>
+<body>
+  <header>☁️ CloudWin 11</header>
+  <main>
+    <h2>Meu PC na nuvem</h2>
+    <p>Seu espaço virtual começa aqui.</p>
+    <div class="status" id="status">● PC desligado</div>
+    <button onclick="startPC()">LIGAR PC</button>
+    <button class="stop" onclick="stopPC()">DESLIGAR PC</button>
+    <p>Plano planejado: 50 GB</p>
+    <p>Sessão planejada: 6 horas</p>
+  </main>
+  <footer>CloudWin 11 © 2026</footer>
+  <script>
+    function startPC() {
+      document.getElementById("status").textContent =
+        "● Painel de demonstração ligado";
+    }
+    function stopPC() {
+      document.getElementById("status").textContent =
+        "● PC desligado";
+    }
+  </script>
+</body>
+</html>
