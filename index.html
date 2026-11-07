@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -6,126 +7,314 @@
 <title>CloudWin 11</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial;background:linear-gradient(135deg,#071d49,#0877b9,#142b65);color:white;height:100vh;overflow:hidden}
-#desktop{padding:20px;display:flex;gap:25px;flex-wrap:wrap}
-.icon{width:75px;text-align:center;cursor:pointer;padding:8px}
-.icon b{font-size:35px;display:block}
-#taskbar{position:absolute;bottom:0;width:100%;height:60px;background:#101a2ddd;display:flex;justify-content:center;align-items:center;gap:18px;backdrop-filter:blur(15px)}
-#taskbar button{background:transparent;color:white;border:0;font-size:25px}
-#start{display:none;position:absolute;bottom:70px;left:50%;transform:translateX(-50%);width:min(90%,400px);background:#17263bea;padding:20px;border-radius:15px}
-#start input{width:100%;padding:12px;border-radius:8px;border:0}
-#start button,.window button{padding:10px;margin:5px;border:0;border-radius:7px;cursor:pointer}
-.window{display:none;position:absolute;top:12%;left:8%;width:84%;height:65%;background:#edf3fa;color:#172033;border-radius:12px;overflow:hidden;box-shadow:0 10px 40px #0008}
-.bar{background:#dce7f5;padding:12px;display:flex;justify-content:space-between}
-.content{padding:12px;height:85%;overflow:auto}
-#terminal{background:#080d10;color:#48ff78;height:100%;padding:12px;font-family:monospace;overflow:auto}
-#terminal input{background:transparent;color:#48ff78;border:0;outline:0;width:75%;font-family:monospace}
-textarea{width:100%;height:75%;padding:10px}
+body{margin:0;font-family:Arial;overflow:hidden}
+#desktop{
+height:100dvh;padding:15px;
+background:linear-gradient(135deg,#a9dafa,#087bc9,#063c91);
+position:relative;color:white
+}
+.icons{display:grid;grid-template-columns:85px;gap:10px}
+.icon{
+background:none;border:0;color:white;
+font-size:14px;padding:8px;cursor:pointer
+}
+.icon span{display:block;font-size:34px;margin-bottom:5px}
+#taskbar{
+position:absolute;bottom:0;left:0;width:100%;height:60px;
+background:#142d49dd;backdrop-filter:blur(15px);
+display:flex;align-items:center;justify-content:center;gap:12px
+}
+.task{border:0;background:none;color:white;font-size:25px;padding:8px}
+#clock{position:absolute;right:12px;font-size:12px}
+#start{
+display:none;position:absolute;bottom:70px;left:50%;
+transform:translateX(-50%);width:min(420px,94%);
+background:#e9f1ff;color:#17243a;padding:18px;
+border-radius:15px;box-shadow:0 5px 30px #0008
+}
+#start input{width:100%;padding:12px;border-radius:8px;border:1px solid #aaa}
+.apps{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:15px}
+.apps button{padding:15px 5px;border:0;border-radius:9px;background:white;color:#17243a}
+.window{
+display:none;position:absolute;left:50%;top:50%;
+transform:translate(-50%,-50%);
+width:min(650px,95%);height:min(480px,75%);
+background:#f3f6fc;color:#17243a;border-radius:12px;
+box-shadow:0 10px 40px #0008;overflow:hidden
+}
+.titlebar{
+height:42px;background:#dce9f8;
+display:flex;align-items:center;justify-content:space-between;padding:0 12px
+}
+.titlebar button{border:0;background:none;font-size:18px}
+.content{padding:15px;height:calc(100% - 42px);overflow:auto}
+.content textarea{width:100%;height:80%;padding:10px}
+.terminal{
+background:#080d0a;color:#b9f6c5;font:14px monospace;
+height:100%;padding:12px;overflow:auto
+}
+.terminal input{background:transparent;color:#b9f6c5;border:0;outline:0;width:75%;font:inherit}
+#run{
+display:none;position:absolute;top:35%;left:50%;
+transform:translateX(-50%);background:#eaf2ff;color:#17243a;
+padding:20px;border-radius:12px;width:min(350px,90%)
+}
+#run input{width:100%;padding:12px;margin:10px 0}
+button{cursor:pointer}
 </style>
 </head>
 <body>
 <div id="desktop">
-<div class="icon" onclick="openApp('Arquivos')"><b>📁</b>Arquivos</div>
-<div class="icon" onclick="openApp('CMD')"><b>⌨️</b>CMD</div>
-<div class="icon" onclick="openApp('Bloco de Notas')"><b>📝</b>Notas</div>
-<div class="icon" onclick="openApp('Calculadora')"><b>🧮</b>Calculadora</div>
-<div class="icon" onclick="openApp('Configurações')"><b>⚙️</b>Configurações</div>
-<div class="icon" onclick="openApp('Este Computador')"><b>💻</b>Este PC</div>
+<div class="icons">
+<button class="icon" onclick="openApp('files')"><span>📁</span>Arquivos</button>
+<button class="icon" onclick="openApp('cmd')"><span>⌨️</span>CMD</button>
+<button class="icon" onclick="openApp('notes')"><span>📝</span>Notas</button>
+<button class="icon" onclick="openApp('calc')"><span>🧮</span>Calculadora</button>
+<button class="icon" onclick="openApp('settings')"><span>⚙️</span>Configurações</button>
+<button class="icon" onclick="openApp('pc')"><span>💻</span>Este PC</button>
+<button class="icon" onclick="openApp('ps')"><span>🔷</span>PowerShell</button>
 </div>
 
 <div id="start">
-<h2>CloudWin 11</h2>
-<input id="search" placeholder="Pesquisar aplicativos ou comandos..." onkeydown="if(event.key==='Enter')run(this.value)">
-<div id="apps"></div>
+<h3>Iniciar</h3>
+<input id="search" placeholder="Pesquisar aplicativos" oninput="searchApps()">
+<div class="apps" id="appGrid">
+<button data-name="arquivos" onclick="openApp('files')">📁<br>Arquivos</button>
+<button data-name="cmd" onclick="openApp('cmd')">⌨️<br>CMD</button>
+<button data-name="powershell" onclick="openApp('ps')">🔷<br>PowerShell</button>
+<button data-name="notas" onclick="openApp('notes')">📝<br>Notas</button>
+<button data-name="calculadora" onclick="openApp('calc')">🧮<br>Calculadora</button>
+<button data-name="configurações" onclick="openApp('settings')">⚙️<br>Configurações</button>
+<button data-name="este pc" onclick="openApp('pc')">💻<br>Este PC</button>
+<button data-name="executar" onclick="openRun()">▶️<br>Executar</button>
+</div>
 </div>
 
-<div class="window" id="win">
-<div class="bar"><span id="title">Aplicativo</span><button onclick="closeApp()">✕</button></div>
-<div class="content" id="content"></div>
+<div id="run">
+<b>Executar</b>
+<p>Digite o nome de um aplicativo:</p>
+<input id="runInput" placeholder="cmd, calc, notepad...">
+<button onclick="runCommand()">OK</button>
+<button onclick="closeRun()">Cancelar</button>
 </div>
 
 <div id="taskbar">
-<button onclick="toggleStart()">⊞</button>
-<button onclick="openApp('Arquivos')">📁</button>
-<button onclick="openApp('CMD')">⌨️</button>
-<button onclick="openApp('Bloco de Notas')">📝</button>
+<button class="task" onclick="toggleStart()">⊞</button>
+<button class="task" onclick="openApp('files')">📁</button>
+<button class="task" onclick="openApp('cmd')">⌨️</button>
+<button class="task" onclick="openApp('notes')">📝</button>
+<button class="task" onclick="openApp('calc')">🧮</button>
 <span id="clock"></span>
+</div>
+</div>
+
+<div class="window" id="files">
+<div class="titlebar"><b>📁 Explorador de Arquivos</b><button onclick="closeApp('files')">✕</button></div>
+<div class="content">
+<h3>Início</h3>
+<p>📁 Área de Trabalho</p>
+<p>📥 Downloads</p>
+<p>📄 Documentos</p>
+<p>🖼️ Imagens</p>
+<p>💻 Este Computador</p>
+<hr>
+<button onclick="newFile()">＋ Novo arquivo</button>
+<div id="fileList"></div>
+</div>
+</div>
+
+<div class="window" id="notes">
+<div class="titlebar"><b>📝 Bloco de Notas</b><button onclick="closeApp('notes')">✕</button></div>
+<div class="content">
+<button onclick="saveNotes()">💾 Salvar</button>
+<textarea id="noteText" placeholder="Digite suas anotações..."></textarea>
+<p id="noteStatus"></p>
+</div>
+</div>
+
+<div class="window" id="calc">
+<div class="titlebar"><b>🧮 Calculadora</b><button onclick="closeApp('calc')">✕</button></div>
+<div class="content">
+<input id="calcInput" placeholder="Ex.: 10+5*2" style="width:100%;padding:15px">
+<button onclick="calculate()">= Calcular</button>
+<h2 id="calcResult">Resultado</h2>
+</div>
+</div>
+
+<div class="window" id="settings">
+<div class="titlebar"><b>⚙️ Configurações</b><button onclick="closeApp('settings')">✕</button></div>
+<div class="content">
+<h2>CloudWin 11</h2>
+<p>Configurações do ambiente virtual.</p>
+<button onclick="changeWallpaper()">Alterar papel de parede</button>
+</div>
+</div>
+
+<div class="window" id="pc">
+<div class="titlebar"><b>💻 Este Computador</b><button onclick="closeApp('pc')">✕</button></div>
+<div class="content">
+<h2>Este Computador</h2>
+<p>💽 Disco Local (C:)</p>
+<p>📁 Documentos</p>
+<p>📥 Downloads</p>
+<p>Armazenamento demonstrativo do navegador.</p>
+</div>
+</div>
+
+<div class="window" id="cmd">
+<div class="titlebar"><b>Prompt de Comando — CloudWin</b><button onclick="closeApp('cmd')">✕</button></div>
+<div class="content" style="padding:0">
+<div class="terminal" id="cmdOutput">
+Microsoft Windows [Versão CloudWin 11]<br>
+Digite help para ver os comandos.<br><br>
+C:\Users\CloudWin&gt; <input id="cmdInput" onkeydown="terminalKey(event,'cmd')">
+</div>
+</div>
+</div>
+
+<div class="window" id="ps">
+<div class="titlebar"><b>PowerShell — CloudWin</b><button onclick="closeApp('ps')">✕</button></div>
+<div class="content" style="padding:0">
+<div class="terminal" id="psOutput">
+PowerShell demonstrativo do CloudWin<br><br>
+PS C:\Users\CloudWin&gt; <input id="psInput" onkeydown="terminalKey(event,'ps')">
+</div>
+</div>
 </div>
 
 <script>
-const start=document.getElementById('start');
-const win=document.getElementById('win');
-const content=document.getElementById('content');
-const title=document.getElementById('title');
+const $=id=>document.getElementById(id);
 
-function toggleStart(){start.style.display=start.style.display==='block'?'none':'block'}
-function closeApp(){win.style.display='none'}
-function openApp(name){
-start.style.display='none';
-win.style.display='block';
-title.textContent=name;
-if(name==='CMD')terminal();
-else if(name==='Bloco de Notas')content.innerHTML='<textarea id="notes" placeholder="Digite suas anotações..."></textarea><button onclick="localStorage.setItem(\'cw_notes\',document.getElementById(\'notes\').value)">Salvar</button>';
-else if(name==='Arquivos')content.innerHTML='<h3>📁 Explorador de Arquivos</h3><p>📂 Documentos</p><p>📂 Downloads</p><p>📂 Área de Trabalho</p><p>Seus arquivos de demonstração aparecerão aqui.</p>';
-else if(name==='Calculadora')content.innerHTML='<h3>Calculadora</h3><input id="calc" placeholder="Ex: 10+5"><button onclick="try{document.getElementById(\'result\').textContent=Function(\'return (\'+document.getElementById(\'calc\').value+\')\')()}catch(e){document.getElementById(\'result\').textContent=\'Expressão inválida\'}">Calcular</button><p id="result"></p>';
-else if(name==='Configurações')content.innerHTML='<h3>Configurações</h3><p>CloudWin 11</p><p>Personalização</p><p>Sistema</p><p>Sobre este PC</p>';
-else if(name==='Este Computador')content.innerHTML='<h3>💻 Este Computador</h3><p>Disco local (C:) — ambiente de demonstração</p>';
+function openApp(id){
+$('start').style.display='none';
+$('run').style.display='none';
+document.querySelectorAll('.window').forEach(w=>w.style.display='none');
+$(id).style.display='block';
+if(id==='notes') $('noteText').value=localStorage.getItem('cw_notes')||'';
+if(id==='files') renderFiles();
 }
+function closeApp(id){$(id).style.display='none'}
+function toggleStart(){
+$('start').style.display=$('start').style.display==='block'?'none':'block';
+}
+function openRun(){
+$('start').style.display='none';
+$('run').style.display='block';
+$('runInput').focus();
+}
+function closeRun(){$('run').style.display='none'}
 
-function terminal(){
-content.innerHTML='<div id="terminal"><div>CloudWin 11 [Versão 2.0]<br>Terminal de comandos simulado.<br>Digite help para ver os comandos.<br><br><span id="output"></span><br><span>C:\\Users\\CloudWin&gt; </span><input id="command" autofocus></div></div>';
-const input=document.getElementById('command');
-input.focus();
-input.addEventListener('keydown',e=>{
-if(e.key==='Enter'){
-let c=input.value.trim().toLowerCase();
-let out=document.getElementById('output');
-let msg='';
-if(c==='help')msg='Comandos: help, cls, dir, date, time, hostname, ver, winver, notepad, calc, explorer, control, taskmgr, exit';
-else if(c==='cls')out.innerHTML='';
-else if(c==='dir')msg='Diretório C:\\Users\\CloudWin<br>Documentos   Downloads   Desktop';
-else if(c==='date')msg=new Date().toLocaleDateString();
-else if(c==='time')msg=new Date().toLocaleTimeString();
-else if(c==='hostname')msg='CLOUDWIN-PC';
-else if(c==='ver'||c==='winver')msg='CloudWin 11 — versão 2.0 (ambiente de demonstração)';
-else if(c==='notepad')openApp('Bloco de Notas');
-else if(c==='calc')openApp('Calculadora');
-else if(c==='explorer')openApp('Arquivos');
-else if(c==='control')openApp('Configurações');
-else if(c==='taskmgr')msg='Gerenciador de tarefas: ambiente CloudWin em execução.';
-else if(c==='exit'){closeApp();return}
-else if(c)msg='Comando não reconhecido: '+c;
-out.innerHTML+=c+'<br>'+msg+'<br>';
-input.value='';
+function runCommand(){
+let c=$('runInput').value.toLowerCase().trim();
+closeRun();
+if(c==='cmd')openApp('cmd');
+else if(c==='powershell')openApp('ps');
+else if(c==='notepad')openApp('notes');
+else if(c==='calc')openApp('calc');
+else if(c==='explorer')openApp('files');
+else if(c==='control')openApp('settings');
+else alert('Aplicativo não encontrado no CloudWin.');
 }
+function searchApps(){
+let q=$('search').value.toLowerCase();
+document.querySelectorAll('#appGrid button').forEach(b=>{
+b.style.display=b.dataset.name.includes(q)?'block':'none';
 });
 }
+function saveNotes(){
+localStorage.setItem('cw_notes',$('noteText').value);
+$('noteStatus').textContent='Salvo neste navegador!';
+}
+function calculate(){
+let e=$('calcInput').value;
+if(!/^[0-9+\-*/(). %]+$/.test(e)){
+$('calcResult').textContent='Expressão inválida';return;
+}
+try{
+let result=Function('"use strict";return ('+e+')')();
+$('calcResult').textContent=Number.isFinite(result)?result:'Resultado inválido';
+}catch{$('calcResult').textContent='Erro no cálculo'}
+}
+function newFile(){
+let name=prompt('Nome do arquivo:');
+if(!name)return;
+let files=JSON.parse(localStorage.getItem('cw_files')||'[]');
+files.push({name:name,content:''});
+localStorage.setItem('cw_files',JSON.stringify(files));
+renderFiles();
+}
+function renderFiles(){
+let files=JSON.parse(localStorage.getItem('cw_files')||'[]');
+$('fileList').innerHTML='';
+files.forEach((f,i)=>{
+let b=document.createElement('button');
+b.textContent='📄 '+f.name;
+b.onclick=()=>editFile(i);
+$('fileList').appendChild(b);
+});
+}
+function editFile(i){
+let files=JSON.parse(localStorage.getItem('cw_files')||'[]');
+let content=prompt('Conteúdo de '+files[i].name,files[i].content);
+if(content===null)return;
+files[i].content=content;
+localStorage.setItem('cw_files',JSON.stringify(files));
+}
+function changeWallpaper(){
+$('desktop').style.background='linear-gradient(135deg,#263b70,#101d48,#050b20)';
+}
 
-function run(c){
-c=c.trim().toLowerCase();
-if(c==='cmd'||c==='powershell')openApp('CMD');
-else if(c==='notepad')openApp('Bloco de Notas');
-else if(c==='calc')openApp('Calculadora');
-else if(c==='explorer')openApp('Arquivos');
-else if(c==='control'||c==='settings')openApp('Configurações');
-else if(c==='winver')openApp('Este Computador');
-else if(c==='taskmgr')openApp('CMD');
-else alert('Aplicativo não encontrado: '+c);
+function terminalKey(e,type){
+if(e.key!=='Enter')return;
+let input=$(type==='cmd'?'cmdInput':'psInput');
+let output=$(type==='cmd'?'cmdOutput':'psOutput');
+let command=input.value.trim();
+let lower=command.toLowerCase();
+let result='';
+if(type==='cmd'){
+if(lower==='help')result='Comandos: help, cls, ver, whoami, date, time, dir, echo, color';
+else if(lower==='ver')result='CloudWin 11 — Terminal demonstrativo';
+else if(lower==='whoami')result='CloudWin\\User';
+else if(lower==='date')result=new Date().toLocaleDateString();
+else if(lower==='time')result=new Date().toLocaleTimeString();
+else if(lower==='dir')result='Diretório de C:\\Users\\CloudWin<br>Desktop　Documents　Downloads';
+else if(lower==='cls'){output.innerHTML='';return}
+else if(lower.startsWith('echo '))result=command.slice(5);
+else if(lower.startsWith('color '))result='Cor demonstrativa: '+command.slice(6);
+else if(!command)result='';
+else result='Comando não reconhecido: '+command;
+}else{
+if(lower==='help'||lower==='get-help')result='Comandos: Get-Help, Get-Date, Get-Location, Get-ChildItem, Clear-Host';
+else if(lower==='get-date')result=new Date().toString();
+else if(lower==='get-location')result='C:\\Users\\CloudWin';
+else if(lower==='get-childitem')result='Desktop　Documents　Downloads';
+else if(lower==='clear-host'||lower==='cls'){output.innerHTML='';return}
+else if(lower.startsWith('write-output '))result=command.slice(13);
+else result='Comando não disponível neste PowerShell demonstrativo.';
+}
+let line=document.createElement('div');
+line.textContent=(type==='cmd'?'C:\\Users\\CloudWin> ':'PS C:\\Users\\CloudWin> ')+command;
+output.insertBefore(line,input);
+let response=document.createElement('div');
+response.innerHTML=result;
+output.insertBefore(response,input);
+input.value='';
+output.scrollTop=output.scrollHeight;
 }
 
 document.addEventListener('keydown',e=>{
-if(e.key==='Escape')closeApp();
-if(e.key==='F10'){e.preventDefault();toggleStart()}
-if(e.key.toLowerCase()==='r'&&e.metaKey){
-e.preventDefault();
-let c=prompt('Executar: digite o nome do comando');
-if(c)run(c);
+if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='r'){
+e.preventDefault();openRun();
 }
-if(e.key.toLowerCase()==='e'&&e.metaKey){e.preventDefault();openApp('Arquivos')}
-if(e.key.toLowerCase()==='d'&&e.metaKey){e.preventDefault();closeApp()}
+if(e.key==='Escape'){
+$('start').style.display='none';closeRun();
+}
 });
-setInterval(()=>document.getElementById('clock').textContent=new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}),1000);
-document.getElementById('notes')?.value;
+function updateClock(){
+$('clock').textContent=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+}
+updateClock();
+setInterval(updateClock,1000);
 </script>
 </body>
 </html>
