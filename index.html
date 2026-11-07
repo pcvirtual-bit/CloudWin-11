@@ -1,71 +1,131 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>CloudWin 11</title>
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      background: #080d18;
-      color: white;
-      font-family: Arial, sans-serif;
-      text-align: center;
-      padding: 30px 16px;
-    }
-    header {
-      color: #55baff;
-      font-size: 28px;
-      font-weight: bold;
-      margin: 25px 0;
-    }
-    main {
-      max-width: 430px;
-      margin: 40px auto;
-      padding: 25px;
-      background: #131e32;
-      border: 1px solid #24466d;
-      border-radius: 18px;
-    }
-    .status { color: #ffbd59; margin: 20px; }
-    button {
-      display: block;
-      width: 100%;
-      padding: 16px;
-      margin-top: 14px;
-      border: 0;
-      border-radius: 10px;
-      background: #168cff;
-      color: white;
-      font-size: 17px;
-      font-weight: bold;
-    }
-    button.stop { background: #d94355; }
-    footer { color: #8192aa; margin-top: 35px; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CloudWin 11</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial;background:linear-gradient(135deg,#071d49,#0877b9,#142b65);color:white;height:100vh;overflow:hidden}
+#desktop{padding:20px;display:flex;gap:25px;flex-wrap:wrap}
+.icon{width:75px;text-align:center;cursor:pointer;padding:8px}
+.icon b{font-size:35px;display:block}
+#taskbar{position:absolute;bottom:0;width:100%;height:60px;background:#101a2ddd;display:flex;justify-content:center;align-items:center;gap:18px;backdrop-filter:blur(15px)}
+#taskbar button{background:transparent;color:white;border:0;font-size:25px}
+#start{display:none;position:absolute;bottom:70px;left:50%;transform:translateX(-50%);width:min(90%,400px);background:#17263bea;padding:20px;border-radius:15px}
+#start input{width:100%;padding:12px;border-radius:8px;border:0}
+#start button,.window button{padding:10px;margin:5px;border:0;border-radius:7px;cursor:pointer}
+.window{display:none;position:absolute;top:12%;left:8%;width:84%;height:65%;background:#edf3fa;color:#172033;border-radius:12px;overflow:hidden;box-shadow:0 10px 40px #0008}
+.bar{background:#dce7f5;padding:12px;display:flex;justify-content:space-between}
+.content{padding:12px;height:85%;overflow:auto}
+#terminal{background:#080d10;color:#48ff78;height:100%;padding:12px;font-family:monospace;overflow:auto}
+#terminal input{background:transparent;color:#48ff78;border:0;outline:0;width:75%;font-family:monospace}
+textarea{width:100%;height:75%;padding:10px}
+</style>
 </head>
 <body>
-  <header>☁️ CloudWin 11</header>
-  <main>
-    <h2>Meu PC na nuvem</h2>
-    <p>Seu espaço virtual começa aqui.</p>
-    <div class="status" id="status">● PC desligado</div>
-    <button onclick="startPC()">LIGAR PC</button>
-    <button class="stop" onclick="stopPC()">DESLIGAR PC</button>
-    <p>Plano planejado: 50 GB</p>
-    <p>Sessão planejada: 6 horas</p>
-  </main>
-  <footer>CloudWin 11 © 2026</footer>
-  <script>
-    function startPC() {
-      document.getElementById("status").textContent =
-        "● Painel de demonstração ligado";
-    }
-    function stopPC() {
-      document.getElementById("status").textContent =
-        "● PC desligado";
-    }
-  </script>
+<div id="desktop">
+<div class="icon" onclick="openApp('Arquivos')"><b>📁</b>Arquivos</div>
+<div class="icon" onclick="openApp('CMD')"><b>⌨️</b>CMD</div>
+<div class="icon" onclick="openApp('Bloco de Notas')"><b>📝</b>Notas</div>
+<div class="icon" onclick="openApp('Calculadora')"><b>🧮</b>Calculadora</div>
+<div class="icon" onclick="openApp('Configurações')"><b>⚙️</b>Configurações</div>
+<div class="icon" onclick="openApp('Este Computador')"><b>💻</b>Este PC</div>
+</div>
+
+<div id="start">
+<h2>CloudWin 11</h2>
+<input id="search" placeholder="Pesquisar aplicativos ou comandos..." onkeydown="if(event.key==='Enter')run(this.value)">
+<div id="apps"></div>
+</div>
+
+<div class="window" id="win">
+<div class="bar"><span id="title">Aplicativo</span><button onclick="closeApp()">✕</button></div>
+<div class="content" id="content"></div>
+</div>
+
+<div id="taskbar">
+<button onclick="toggleStart()">⊞</button>
+<button onclick="openApp('Arquivos')">📁</button>
+<button onclick="openApp('CMD')">⌨️</button>
+<button onclick="openApp('Bloco de Notas')">📝</button>
+<span id="clock"></span>
+</div>
+
+<script>
+const start=document.getElementById('start');
+const win=document.getElementById('win');
+const content=document.getElementById('content');
+const title=document.getElementById('title');
+
+function toggleStart(){start.style.display=start.style.display==='block'?'none':'block'}
+function closeApp(){win.style.display='none'}
+function openApp(name){
+start.style.display='none';
+win.style.display='block';
+title.textContent=name;
+if(name==='CMD')terminal();
+else if(name==='Bloco de Notas')content.innerHTML='<textarea id="notes" placeholder="Digite suas anotações..."></textarea><button onclick="localStorage.setItem(\'cw_notes\',document.getElementById(\'notes\').value)">Salvar</button>';
+else if(name==='Arquivos')content.innerHTML='<h3>📁 Explorador de Arquivos</h3><p>📂 Documentos</p><p>📂 Downloads</p><p>📂 Área de Trabalho</p><p>Seus arquivos de demonstração aparecerão aqui.</p>';
+else if(name==='Calculadora')content.innerHTML='<h3>Calculadora</h3><input id="calc" placeholder="Ex: 10+5"><button onclick="try{document.getElementById(\'result\').textContent=Function(\'return (\'+document.getElementById(\'calc\').value+\')\')()}catch(e){document.getElementById(\'result\').textContent=\'Expressão inválida\'}">Calcular</button><p id="result"></p>';
+else if(name==='Configurações')content.innerHTML='<h3>Configurações</h3><p>CloudWin 11</p><p>Personalização</p><p>Sistema</p><p>Sobre este PC</p>';
+else if(name==='Este Computador')content.innerHTML='<h3>💻 Este Computador</h3><p>Disco local (C:) — ambiente de demonstração</p>';
+}
+
+function terminal(){
+content.innerHTML='<div id="terminal"><div>CloudWin 11 [Versão 2.0]<br>Terminal de comandos simulado.<br>Digite help para ver os comandos.<br><br><span id="output"></span><br><span>C:\\Users\\CloudWin&gt; </span><input id="command" autofocus></div></div>';
+const input=document.getElementById('command');
+input.focus();
+input.addEventListener('keydown',e=>{
+if(e.key==='Enter'){
+let c=input.value.trim().toLowerCase();
+let out=document.getElementById('output');
+let msg='';
+if(c==='help')msg='Comandos: help, cls, dir, date, time, hostname, ver, winver, notepad, calc, explorer, control, taskmgr, exit';
+else if(c==='cls')out.innerHTML='';
+else if(c==='dir')msg='Diretório C:\\Users\\CloudWin<br>Documentos   Downloads   Desktop';
+else if(c==='date')msg=new Date().toLocaleDateString();
+else if(c==='time')msg=new Date().toLocaleTimeString();
+else if(c==='hostname')msg='CLOUDWIN-PC';
+else if(c==='ver'||c==='winver')msg='CloudWin 11 — versão 2.0 (ambiente de demonstração)';
+else if(c==='notepad')openApp('Bloco de Notas');
+else if(c==='calc')openApp('Calculadora');
+else if(c==='explorer')openApp('Arquivos');
+else if(c==='control')openApp('Configurações');
+else if(c==='taskmgr')msg='Gerenciador de tarefas: ambiente CloudWin em execução.';
+else if(c==='exit'){closeApp();return}
+else if(c)msg='Comando não reconhecido: '+c;
+out.innerHTML+=c+'<br>'+msg+'<br>';
+input.value='';
+}
+});
+}
+
+function run(c){
+c=c.trim().toLowerCase();
+if(c==='cmd'||c==='powershell')openApp('CMD');
+else if(c==='notepad')openApp('Bloco de Notas');
+else if(c==='calc')openApp('Calculadora');
+else if(c==='explorer')openApp('Arquivos');
+else if(c==='control'||c==='settings')openApp('Configurações');
+else if(c==='winver')openApp('Este Computador');
+else if(c==='taskmgr')openApp('CMD');
+else alert('Aplicativo não encontrado: '+c);
+}
+
+document.addEventListener('keydown',e=>{
+if(e.key==='Escape')closeApp();
+if(e.key==='F10'){e.preventDefault();toggleStart()}
+if(e.key.toLowerCase()==='r'&&e.metaKey){
+e.preventDefault();
+let c=prompt('Executar: digite o nome do comando');
+if(c)run(c);
+}
+if(e.key.toLowerCase()==='e'&&e.metaKey){e.preventDefault();openApp('Arquivos')}
+if(e.key.toLowerCase()==='d'&&e.metaKey){e.preventDefault();closeApp()}
+});
+setInterval(()=>document.getElementById('clock').textContent=new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}),1000);
+document.getElementById('notes')?.value;
+</script>
 </body>
 </html>
