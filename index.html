@@ -7,24 +7,25 @@
 <title>CloudWin 11</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial;background:#071326;color:white}
-button{cursor:pointer;border:0;border-radius:8px;padding:11px}
-#login{height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;background:linear-gradient(135deg,#071326,#087bc9);padding:20px}
-.panel{background:#ffffff20;padding:30px;border-radius:18px;width:100%;max-width:400px}
+body{margin:0;font-family:Arial;background:#071326;color:white;overflow:hidden}
+button{cursor:pointer;border:0;border-radius:9px;padding:12px}
+#login{height:100dvh;display:flex;align-items:center;justify-content:center;text-align:center;padding:20px;background:linear-gradient(135deg,#071326,#087bc9)}
+.panel{background:#ffffff25;padding:30px;border-radius:20px;width:100%;max-width:400px}
 .primary{background:#1687dc;color:white}
-#desktop{display:none;height:100vh;background:linear-gradient(135deg,#102b54,#087bc9);padding:15px}
-#icons{display:grid;grid-template-columns:90px 90px;gap:15px}
-.appicon{background:transparent;color:white;font-size:14px}
-.appicon span{display:block;font-size:34px;margin-bottom:7px}
-#taskbar{position:fixed;bottom:0;left:0;width:100%;height:58px;background:#101b30e8;display:flex;align-items:center;justify-content:center;gap:15px}
-#taskbar button{background:#263e60;color:white;font-size:20px}
-#clock{position:absolute;right:12px;font-size:12px}
-#start{display:none;position:fixed;bottom:68px;left:50%;transform:translateX(-50%);background:#e9eff8;color:#17243a;padding:18px;border-radius:15px;width:min(90%,380px)}
+#desktop{display:none;height:100dvh;background-image:url("./Screenshot_20261109-205612_Tela%20de%20in%C3%ADcio%20do%20Pixel.png");background-size:cover;background-position:center}
+#icons{display:grid;grid-template-columns:90px 90px;gap:15px;padding:15px}
+.appicon{background:transparent;color:white;text-shadow:1px 2px 4px black}
+.appicon span{display:block;font-size:35px;margin-bottom:7px}
+#taskbar{position:fixed;bottom:0;width:100%;min-height:65px;background:#101b30df;backdrop-filter:blur(15px);display:flex;align-items:center;justify-content:center;gap:12px;padding:7px}
+#taskbar button{background:#263e60;color:white;font-size:22px}
+#brand{font-size:13px;font-weight:bold}
+#clock{position:absolute;right:10px;font-size:12px}
+#start{display:none;position:fixed;bottom:75px;left:50%;transform:translateX(-50%);background:#e9eff8;color:#17243a;padding:20px;border-radius:15px;width:min(90%,380px)}
 #start button{margin:4px}
-#window{display:none;position:fixed;left:5%;top:12%;width:90%;height:70%;background:#edf2fa;color:#17243a;border-radius:12px;overflow:hidden}
-#bar{height:42px;background:#d5e2f5;display:flex;justify-content:space-between;align-items:center;padding:10px}
-#content{padding:15px;height:calc(100% - 42px);overflow:auto}
-textarea{width:100%;height:75%;padding:10px}
+#window{display:none;position:fixed;left:5%;top:10%;width:90%;height:75%;background:#edf2fa;color:#17243a;border-radius:12px;overflow:hidden}
+#bar{height:43px;background:#d5e2f5;display:flex;justify-content:space-between;align-items:center;padding:10px}
+#content{padding:15px;height:calc(100% - 43px);overflow:auto}
+textarea{width:100%;height:70%;padding:10px}
 .file{padding:10px;border-bottom:1px solid #ccc}
 </style>
 </head>
@@ -36,7 +37,7 @@ textarea{width:100%;height:75%;padding:10px}
   <p>Seu computador virtual</p>
   <p>⚡ Entrada sem fila</p>
   <p>⏱️ 6 horas por sessão</p>
-  <p>💾 Arquivos salvos neste navegador</p>
+  <p>💾 Arquivos salvos</p>
   <button class="primary" onclick="startPC()">LIGAR MEU PC</button>
   <p id="status"></p>
  </div>
@@ -61,7 +62,7 @@ textarea{width:100%;height:75%;padding:10px}
  </div>
 
  <div id="start">
-  <h3>Iniciar</h3>
+  <h3>☁️ CloudWin 11</h3>
   <button onclick="openApp('files')">📁 Arquivos</button>
   <button onclick="openApp('notes')">📝 Notas</button>
   <button onclick="openApp('calc')">🧮 Calculadora</button>
@@ -71,6 +72,7 @@ textarea{width:100%;height:75%;padding:10px}
 
  <div id="taskbar">
   <button onclick="toggleStart()">⊞</button>
+  <span id="brand">☁️ CloudWin 11</span>
   <button onclick="openApp('files')">📁</button>
   <button onclick="openApp('notes')">📝</button>
   <span id="clock"></span>
@@ -80,11 +82,15 @@ textarea{width:100%;height:75%;padding:10px}
 <script>
 const KEY='cloudwin11';
 const DURATION=6*60*60*1000;
-let data;
+let data={};
+
 try{
  data=JSON.parse(localStorage.getItem(KEY))||{};
-}catch(e){data={}}
-if(!data.files)data.files={'Bem-vindo.txt':'Bem-vindo ao CloudWin 11!'};
+}catch(e){data={};}
+
+if(!data.files)data.files={
+ 'Bem-vindo.txt':'Bem-vindo ao CloudWin 11!'
+};
 
 function save(){
  localStorage.setItem(KEY,JSON.stringify(data));
@@ -112,6 +118,7 @@ function shutdown(){
 function updateClock(){
  if(!data.endAt)return;
  let remaining=data.endAt-Date.now();
+
  if(remaining<=0){
   data.endAt=null;
   save();
@@ -120,12 +127,13 @@ function updateClock(){
   document.getElementById('status').textContent='Sessão encerrada. Seus arquivos estão salvos!';
   return;
  }
+
  let h=Math.floor(remaining/3600000);
  let m=Math.floor(remaining%3600000/60000);
  let s=Math.floor(remaining%60000/1000);
- document.getElementById('clock').textContent=
- '⏱ '+h+'h '+m+'m '+s+'s';
+ document.getElementById('clock').textContent='⏱ '+h+'h '+m+'m '+s+'s';
 }
+
 setInterval(updateClock,1000);
 
 function toggleStart(){
@@ -145,44 +153,50 @@ function show(title,html){
 }
 
 function safe(s){
- return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ return String(s).replace(/[&<>"']/g,c=>({
+ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+ }[c]));
 }
 
 function openApp(app){
  if(app==='notes'){
   show('Bloco de notas',`
-  <textarea id="note">${safe(data.files['Anotações.txt']||'')}</textarea>
-  <button class="primary" onclick="saveNote()">Salvar</button>`);
+   <textarea id="note">${safe(data.files['Anotações.txt']||'')}</textarea>
+   <button onclick="saveNote()">Salvar</button>`);
  }
+
  if(app==='files'){
   let html='<h3>Meus arquivos</h3>';
   for(let name in data.files){
-   html+='<div class="file">📄 '+safe(name)+
-   ' <button onclick="readFile('+JSON.stringify(name)+')">Abrir</button></div>';
+   html+='<div class="file">📄 '+safe(name)+' <button onclick="readFile('+JSON.stringify(name)+')">Abrir</button></div>';
   }
   html+='<input id="newName" placeholder="Nome do arquivo"><button onclick="newFile()">Criar</button>';
   show('Explorador de arquivos',html);
  }
+
  if(app==='calc'){
   show('Calculadora',`
-  <input id="expression" placeholder="Ex: 10+5*2">
-  <button onclick="calculate()">Calcular</button>
-  <p id="result"></p>`);
+   <input id="expression" placeholder="Ex: 10+5*2">
+   <button onclick="calculate()">Calcular</button>
+   <p id="result"></p>`);
  }
+
  if(app==='cmd'){
   show('CMD',`
-  <div style="background:#080d18;color:#8dffad;padding:12px;height:100%;font-family:monospace">
-   <p>CloudWin Terminal simulado</p>
-   <p>Digite help para começar.</p>
-   <div id="output"></div>
-   <input id="command" placeholder="Comando" onkeydown="if(event.key==='Enter')runCommand()">
-  </div>`);
+   <div style="background:#080d18;color:#8dffad;padding:12px;height:100%;font-family:monospace">
+    <p>CloudWin Terminal simulado</p>
+    <p>Digite help para começar.</p>
+    <div id="output"></div>
+    <input id="command" placeholder="Comando" onkeydown="if(event.key==='Enter')runCommand()">
+   </div>`);
  }
+
  if(app==='games'){
-  show('Jogos','<h2>🎮 Central de jogos</h2><p>Área para adicionar jogos compatíveis com navegador.</p>');
+  show('Jogos','<h2>🎮 Central de jogos</h2><p>Área de jogos do CloudWin 11.</p>');
  }
+
  if(app==='settings'){
-  show('Configurações','<h2>CloudWin 11</h2><p>Sessão de 6 horas.</p><p>Armazenamento local ativado.</p><button onclick="shutdown()">Desligar PC</button>');
+  show('Configurações','<h2>⚙️ CloudWin 11</h2><p>Sessão de 6 horas.</p><p>Armazenamento local ativado.</p><button onclick="shutdown()">Desligar PC</button>');
  }
 }
 
@@ -203,8 +217,8 @@ function newFile(){
 
 function readFile(name){
  show(name,`
- <textarea id="fileText">${safe(data.files[name]||'')}</textarea>
- <button onclick="saveFile(${JSON.stringify(name)})">Salvar</button>`);
+  <textarea id="fileText">${safe(data.files[name]||'')}</textarea>
+  <button onclick="saveFile(${JSON.stringify(name)})">Salvar</button>`);
 }
 
 function saveFile(name){
@@ -228,17 +242,24 @@ function runCommand(){
  let input=document.getElementById('command');
  let cmd=input.value.trim().toLowerCase();
  let result='';
+
  if(cmd==='help')result='Comandos: help, dir, date, time, ver, cls, shutdown';
  else if(cmd==='dir')result=Object.keys(data.files).join(', ');
  else if(cmd==='date')result=new Date().toLocaleDateString();
  else if(cmd==='time')result=new Date().toLocaleTimeString();
  else if(cmd==='ver')result='CloudWin 11';
- else if(cmd==='cls'){document.getElementById('output').innerHTML='';input.value='';return;}
+ else if(cmd==='cls'){
+  document.getElementById('output').innerHTML='';
+  input.value='';
+  return;
+ }
  else if(cmd==='shutdown'){shutdown();return;}
  else result='Comando não reconhecido.';
+
  document.getElementById('output').innerHTML+='<p>&gt; '+safe(cmd)+'<br>'+safe(result)+'</p>';
  input.value='';
 }
 </script>
+
 </body>
 </html>
