@@ -12,7 +12,13 @@ button{cursor:pointer;border:0;border-radius:9px;padding:12px}
 #login{height:100dvh;display:flex;align-items:center;justify-content:center;text-align:center;padding:20px;background:linear-gradient(135deg,#071326,#087bc9)}
 .panel{background:#ffffff25;padding:30px;border-radius:20px;width:100%;max-width:400px}
 .primary{background:#1687dc;color:white}
-#desktop{display:none;height:100dvh;background-image:url("./Screenshot_20261109-205612_Tela%20de%20in%C3%ADcio%20do%20Pixel.png");background-size:cover;background-position:center}
+#desktop{
+display:none;
+height:100dvh;
+background-image:url("./Screenshot_20261109-205612_Tela%20de%20in%C3%ADcio%20do%20Pixel.png");
+background-size:cover;
+background-position:center;
+}
 #icons{display:grid;grid-template-columns:90px 90px;gap:15px;padding:15px}
 .appicon{background:transparent;color:white;text-shadow:1px 2px 4px black}
 .appicon span{display:block;font-size:35px;margin-bottom:7px}
@@ -118,7 +124,6 @@ function shutdown(){
 function updateClock(){
  if(!data.endAt)return;
  let remaining=data.endAt-Date.now();
-
  if(remaining<=0){
   data.endAt=null;
   save();
