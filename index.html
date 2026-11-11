@@ -3,266 +3,325 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>CloudWin 11</title>
 <style>
+:root{--glass:rgba(12,19,38,.82);--line:rgba(255,255,255,.16);--accent:#8b5cf6}
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial;background:#071326;color:white;overflow:hidden}
-button{cursor:pointer;border:0;border-radius:9px;padding:12px}
-#login{height:100dvh;display:flex;align-items:center;justify-content:center;text-align:center;padding:20px;background:linear-gradient(135deg,#071326,#087bc9)}
-.panel{background:#ffffff25;padding:30px;border-radius:20px;width:100%;max-width:400px}
-.primary{background:#1687dc;color:white}
-#desktop{
-display:none;
-height:100dvh;
-background-image:url("./Screenshot_20261109-205612_Tela%20de%20in%C3%ADcio%20do%20Pixel.png");
-background-size:cover;
-background-position:center;
+body{margin:0;font-family:Arial,sans-serif;background:#080d1b;color:#fff;overflow:hidden}
+button,input{font:inherit}
+button{cursor:pointer;border:1px solid var(--line);border-radius:10px;padding:10px 14px;color:#fff;background:#ffffff14}
+button:hover{background:#ffffff26}
+#login{height:100dvh;display:flex;align-items:center;justify-content:center;padding:20px;background:radial-gradient(circle at 20% 10%,#342064,#0b1530 55%,#050914)}
+.panel{width:min(440px,100%);padding:28px;border:1px solid var(--line);border-radius:22px;background:#101a32e8;box-shadow:0 20px 70px #0008;text-align:center}
+.panel h1{margin:0 0 8px}
+.muted{color:#b8c2d8}
+.primary{background:linear-gradient(100deg,#5b5ce2,#a43be8);border:0;font-weight:bold}
+#desktop{display:none;height:100dvh;position:relative;background:#101a32 url("./Screenshot_20261109-205612_Tela%20de%20in%C3%ADcio%20do%20Pixel.png") center/cover no-repeat}
+#desktop:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#06102318,#06102338);pointer-events:none}
+#desktop>*{position:relative;z-index:1}
+#topbar{height:48px;display:flex;align-items:center;gap:10px;padding:7px 12px;background:#0912268c;backdrop-filter:blur(16px);border-bottom:1px solid #ffffff20}
+#brand{font-weight:bold;white-space:nowrap}
+#search{display:flex;gap:6px;max-width:620px;flex:1;margin:auto}
+#search input{min-width:0;flex:1;border:1px solid var(--line);border-radius:10px;background:#ffffff18;color:white;padding:9px 12px;outline:none}
+#search input::placeholder{color:#d3d8e8}
+#desktopIcons{display:grid;grid-template-columns:90px;gap:14px;padding:18px;width:115px}
+.deskIcon{display:flex;flex-direction:column;align-items:center;gap:6px;background:#07132638;border:1px solid transparent;text-shadow:0 2px 5px #000}
+.deskIcon .emoji{font-size:34px}
+#taskbar{position:absolute;bottom:0;left:0;right:0;min-height:62px;display:flex;align-items:center;justify-content:center;gap:9px;padding:8px 12px;background:#0a1428d9;border-top:1px solid #ffffff24;backdrop-filter:blur(18px)}
+#taskbar button{font-size:20px;min-width:44px}
+#clock{position:absolute;right:12px;font-size:12px;text-align:right;color:#eef2ff}
+#startMenu{display:none;position:absolute;bottom:72px;left:50%;transform:translateX(-50%);width:min(360px,92vw);padding:18px;border-radius:18px;background:#101a30f2;border:1px solid var(--line);box-shadow:0 15px 45px #0008}
+#startMenu button{margin:4px}
+#window{display:none;position:absolute;left:50%;top:55px;transform:translateX(-50%);width:min(920px,96vw);height:calc(100dvh - 132px);background:#edf1f8;color:#172033;border-radius:14px;overflow:hidden;box-shadow:0 18px 55px #0009;border:1px solid #ffffff80}
+#window.max{top:0;left:0;transform:none;width:100%;height:calc(100dvh - 62px);border-radius:0}
+#winbar{height:48px;background:#dfe7f4;display:flex;align-items:center;justify-content:space-between;padding:7px 10px 7px 15px}
+#winbar button{color:#172033;background:#ffffff80;border-color:#ccd5e4}
+#wincontent{height:calc(100% - 48px);padding:16px;overflow:auto}
+#browserAddress{display:flex;gap:8px;margin-bottom:12px}
+#browserAddress input{flex:1;min-width:0;padding:11px;border:1px solid #c7cfdd;border-radius:9px;color:#172033}
+.browserHint{padding:20px;border-radius:12px;background:#fff;color:#26334b;line-height:1.5}
+.fileRow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px;border-bottom:1px solid #d8deea}
+.fileRow button{color:#172033;background:#fff;border-color:#cbd4e2}
+#newFile{display:flex;gap:8px;margin:12px 0}
+#newFile input{flex:1;min-width:0;padding:10px;border:1px solid #c7cfdd;border-radius:9px}
+.small{font-size:12px;color:#c5cce0}
+@media(max-width:560px){
+#brand{font-size:12px}
+#topbar{gap:6px;padding:6px}
+#taskbar{justify-content:flex-start;padding-right:105px}
+#clock{font-size:10px}
+#window{top:52px;height:calc(100dvh - 125px)}
 }
-#icons{display:grid;grid-template-columns:90px 90px;gap:15px;padding:15px}
-.appicon{background:transparent;color:white;text-shadow:1px 2px 4px black}
-.appicon span{display:block;font-size:35px;margin-bottom:7px}
-#taskbar{position:fixed;bottom:0;width:100%;min-height:65px;background:#101b30df;backdrop-filter:blur(15px);display:flex;align-items:center;justify-content:center;gap:12px;padding:7px}
-#taskbar button{background:#263e60;color:white;font-size:22px}
-#brand{font-size:13px;font-weight:bold}
-#clock{position:absolute;right:10px;font-size:12px}
-#start{display:none;position:fixed;bottom:75px;left:50%;transform:translateX(-50%);background:#e9eff8;color:#17243a;padding:20px;border-radius:15px;width:min(90%,380px)}
-#start button{margin:4px}
-#window{display:none;position:fixed;left:5%;top:10%;width:90%;height:75%;background:#edf2fa;color:#17243a;border-radius:12px;overflow:hidden}
-#bar{height:43px;background:#d5e2f5;display:flex;justify-content:space-between;align-items:center;padding:10px}
-#content{padding:15px;height:calc(100% - 43px);overflow:auto}
-textarea{width:100%;height:70%;padding:10px}
-.file{padding:10px;border-bottom:1px solid #ccc}
 </style>
 </head>
 <body>
 
 <div id="login">
- <div class="panel">
+ <section class="panel">
   <h1>☁️ CloudWin 11</h1>
-  <p>Seu computador virtual</p>
-  <p>⚡ Entrada sem fila</p>
-  <p>⏱️ 6 horas por sessão</p>
-  <p>💾 Arquivos salvos</p>
+  <p class="muted">Seu espaço virtual na nuvem</p>
+  <p>⚡ Acesso direto, sem fila simulada</p>
+  <p>⏱️ Sessão de 6 horas</p>
+  <p>💾 Arquivos guardados neste navegador</p>
   <button class="primary" onclick="startPC()">LIGAR MEU PC</button>
-  <p id="status"></p>
- </div>
+  <p id="loginStatus" class="muted"></p>
+  <p class="small">Protótipo visual: ainda não é um Windows remoto nem executa programas de PC.</p>
+ </section>
 </div>
 
 <div id="desktop">
- <div id="icons">
-  <button class="appicon" onclick="openApp('files')"><span>📁</span>Arquivos</button>
-  <button class="appicon" onclick="openApp('notes')"><span>📝</span>Notas</button>
-  <button class="appicon" onclick="openApp('calc')"><span>🧮</span>Calculadora</button>
-  <button class="appicon" onclick="openApp('cmd')"><span>⌨️</span>CMD</button>
-  <button class="appicon" onclick="openApp('games')"><span>🎮</span>Jogos</button>
-  <button class="appicon" onclick="openApp('settings')"><span>⚙️</span>Configurações</button>
- </div>
-
- <div id="window">
-  <div id="bar">
-   <b id="title">CloudWin</b>
-   <button onclick="closeApp()">✕</button>
-  </div>
-  <div id="content"></div>
- </div>
-
- <div id="start">
-  <h3>☁️ CloudWin 11</h3>
-  <button onclick="openApp('files')">📁 Arquivos</button>
-  <button onclick="openApp('notes')">📝 Notas</button>
-  <button onclick="openApp('calc')">🧮 Calculadora</button>
-  <button onclick="openApp('cmd')">⌨️ CMD</button>
-  <button onclick="shutdown()">⏻ Desligar</button>
- </div>
-
- <div id="taskbar">
-  <button onclick="toggleStart()">⊞</button>
+ <header id="topbar">
   <span id="brand">☁️ CloudWin 11</span>
+  <form id="search" onsubmit="searchWeb(event)">
+   <input id="searchInput" placeholder="Pesquisar na Web ou digitar um endereço">
+   <button type="submit">🔎</button>
+   <button type="button" onclick="fullScreen()" title="Tela cheia">⛶</button>
+  </form>
+ </header>
+
+ <nav id="desktopIcons">
+  <button class="deskIcon" onclick="openApp('files')"><span class="emoji">📁</span>Arquivos</button>
+  <button class="deskIcon" onclick="openApp('browser')"><span class="emoji">🌐</span>Navegador</button>
+  <button class="deskIcon" onclick="openApp('settings')"><span class="emoji">⚙️</span>Configurações</button>
+ </nav>
+
+ <section id="window">
+  <div id="winbar">
+   <strong id="winTitle">CloudWin</strong>
+   <div>
+    <button onclick="minimizeApp()">—</button>
+    <button onclick="maximizeApp()">□</button>
+    <button onclick="closeApp()">✕</button>
+   </div>
+  </div>
+  <div id="wincontent"></div>
+ </section>
+
+ <section id="startMenu">
+  <h3>☁️ CloudWin 11</h3>
+  <button onclick="openApp('browser')">🌐 Navegador</button>
+  <button onclick="openApp('files')">📁 Arquivos</button>
+  <button onclick="openApp('settings')">⚙️ Configurações</button>
+  <button onclick="shutdown()">⏻ Desligar</button>
+ </section>
+
+ <footer id="taskbar">
+  <button onclick="toggleStart()">⊞</button>
+  <button onclick="openApp('browser')">🌐</button>
   <button onclick="openApp('files')">📁</button>
-  <button onclick="openApp('notes')">📝</button>
-  <span id="clock"></span>
- </div>
+  <button onclick="openApp('settings')">⚙️</button>
+  <span id="clock">6h 00m 00s</span>
+ </footer>
 </div>
 
 <script>
-const KEY='cloudwin11';
-const DURATION=6*60*60*1000;
-let data={};
+const STORAGE_KEY='cloudwin11_v2';
+const SIX_HOURS=6*60*60*1000;
+let state={};
 
 try{
- data=JSON.parse(localStorage.getItem(KEY))||{};
-}catch(e){data={};}
+ state=JSON.parse(localStorage.getItem(STORAGE_KEY))||{};
+}catch(e){state={}}
 
-if(!data.files)data.files={
+if(!state.files)state.files={
  'Bem-vindo.txt':'Bem-vindo ao CloudWin 11!'
 };
 
-function save(){
- localStorage.setItem(KEY,JSON.stringify(data));
+function persist(){
+ localStorage.setItem(STORAGE_KEY,JSON.stringify(state));
 }
 
 function startPC(){
- if(!data.endAt||Date.now()>=data.endAt){
-  data.endAt=Date.now()+DURATION;
+ if(!state.endAt||Date.now()>=state.endAt){
+  state.endAt=Date.now()+SIX_HOURS;
  }
- save();
+ persist();
  document.getElementById('login').style.display='none';
  document.getElementById('desktop').style.display='block';
- updateClock();
+ tick();
 }
 
 function shutdown(){
- data.endAt=null;
- save();
+ state.endAt=null;
+ persist();
  document.getElementById('desktop').style.display='none';
  document.getElementById('login').style.display='flex';
- document.getElementById('status').textContent='PC desligado. Seus arquivos continuam salvos!';
+ document.getElementById('loginStatus').textContent='PC desligado. Seus arquivos continuam neste navegador.';
  closeApp();
 }
 
-function updateClock(){
- if(!data.endAt)return;
- let remaining=data.endAt-Date.now();
- if(remaining<=0){
-  data.endAt=null;
-  save();
+function tick(){
+ if(!state.endAt)return;
+ const left=state.endAt-Date.now();
+
+ if(left<=0){
+  state.endAt=null;
+  persist();
   document.getElementById('desktop').style.display='none';
   document.getElementById('login').style.display='flex';
-  document.getElementById('status').textContent='Sessão encerrada. Seus arquivos estão salvos!';
+  document.getElementById('loginStatus').textContent='Sessão encerrada. Seus arquivos continuam salvos neste navegador.';
   return;
  }
 
- let h=Math.floor(remaining/3600000);
- let m=Math.floor(remaining%3600000/60000);
- let s=Math.floor(remaining%60000/1000);
- document.getElementById('clock').textContent='⏱ '+h+'h '+m+'m '+s+'s';
+ const h=Math.floor(left/3600000);
+ const m=Math.floor(left%3600000/60000);
+ const s=Math.floor(left%60000/1000);
+
+ document.getElementById('clock').textContent=
+ `⏱ ${h}h ${String(m).padStart(2,'0')}m ${String(s).padStart(2,'0')}s`;
 }
 
-setInterval(updateClock,1000);
+setInterval(tick,1000);
 
 function toggleStart(){
- let el=document.getElementById('start');
+ const el=document.getElementById('startMenu');
  el.style.display=el.style.display==='block'?'none':'block';
+}
+
+function showWindow(title,html){
+ document.getElementById('winTitle').textContent=title;
+ document.getElementById('wincontent').innerHTML=html;
+ document.getElementById('window').style.display='block';
+ document.getElementById('window').classList.remove('max');
+ document.getElementById('startMenu').style.display='none';
 }
 
 function closeApp(){
  document.getElementById('window').style.display='none';
 }
 
-function show(title,html){
- document.getElementById('title').textContent=title;
- document.getElementById('content').innerHTML=html;
- document.getElementById('window').style.display='block';
- document.getElementById('start').style.display='none';
+function minimizeApp(){
+ closeApp();
 }
 
-function safe(s){
- return String(s).replace(/[&<>"']/g,c=>({
- '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
- }[c]));
+function maximizeApp(){
+ document.getElementById('window').classList.toggle('max');
+}
+
+function fullScreen(){
+ if(!document.fullscreenElement){
+  document.documentElement.requestFullscreen?.();
+ }else{
+  document.exitFullscreen?.();
+ }
+}
+
+function normalizeUrl(value){
+ let v=value.trim();
+ if(!v)return '';
+
+ if(!/^https?:\/\//i.test(v)){
+  if(v.includes('.')&&!v.includes(' ')){
+   v='https://'+v;
+  }else{
+   v='https://www.google.com/search?q='+encodeURIComponent(v);
+  }
+ }
+ return v;
+}
+
+function searchWeb(e){
+ e?.preventDefault();
+ const url=normalizeUrl(document.getElementById('searchInput').value);
+ if(url)window.open(url,'_blank','noopener');
 }
 
 function openApp(app){
- if(app==='notes'){
-  show('Bloco de notas',`
-   <textarea id="note">${safe(data.files['Anotações.txt']||'')}</textarea>
-   <button onclick="saveNote()">Salvar</button>`);
+
+ if(app==='browser'){
+  showWindow('Navegador',`
+   <form id="browserAddress" onsubmit="browserGo(event)">
+    <input id="addressInput" placeholder="Pesquisar ou digitar endereço">
+    <button>Ir</button>
+   </form>
+   <div class="browserHint">
+    <h2>🌐 Navegador CloudWin</h2>
+    <p>Digite um endereço ou uma pesquisa acima. O site será aberto em uma nova aba do navegador do seu celular ou computador.</p>
+    <p><b>Observação:</b> alguns sites não permitem abrir dentro de uma janela incorporada; por isso usamos uma nova aba.</p>
+   </div>
+  `);
  }
 
  if(app==='files'){
-  let html='<h3>Meus arquivos</h3>';
-  for(let name in data.files){
-   html+='<div class="file">📄 '+safe(name)+' <button onclick="readFile('+JSON.stringify(name)+')">Abrir</button></div>';
+  let rows='';
+
+  for(const [name,content] of Object.entries(state.files)){
+   rows+=`
+    <div class="fileRow">
+     <span>📄 ${escapeHtml(name)}</span>
+     <button onclick="editFile(${JSON.stringify(name)})">Abrir</button>
+    </div>`;
   }
-  html+='<input id="newName" placeholder="Nome do arquivo"><button onclick="newFile()">Criar</button>';
-  show('Explorador de arquivos',html);
- }
 
- if(app==='calc'){
-  show('Calculadora',`
-   <input id="expression" placeholder="Ex: 10+5*2">
-   <button onclick="calculate()">Calcular</button>
-   <p id="result"></p>`);
- }
-
- if(app==='cmd'){
-  show('CMD',`
-   <div style="background:#080d18;color:#8dffad;padding:12px;height:100%;font-family:monospace">
-    <p>CloudWin Terminal simulado</p>
-    <p>Digite help para começar.</p>
-    <div id="output"></div>
-    <input id="command" placeholder="Comando" onkeydown="if(event.key==='Enter')runCommand()">
-   </div>`);
- }
-
- if(app==='games'){
-  show('Jogos','<h2>🎮 Central de jogos</h2><p>Área de jogos do CloudWin 11.</p>');
+  showWindow('Explorador de arquivos',`
+   <h2>Este computador</h2>
+   <p>📁 Arquivos pessoais</p>
+   <div id="fileList">${rows||'<p>Nenhum arquivo ainda.</p>'}</div>
+   <form id="newFile" onsubmit="createFile(event)">
+    <input id="newFileName" placeholder="Nome do novo arquivo">
+    <button>Criar</button>
+   </form>
+   <p class="small">Os arquivos ficam salvos apenas neste navegador e aparelho.</p>
+  `);
  }
 
  if(app==='settings'){
-  show('Configurações','<h2>⚙️ CloudWin 11</h2><p>Sessão de 6 horas.</p><p>Armazenamento local ativado.</p><button onclick="shutdown()">Desligar PC</button>');
+  showWindow('Configurações',`
+   <h2>Configurações do CloudWin</h2>
+   <p>⏱ Sessão: até 6 horas</p>
+   <p>💾 Armazenamento: navegador atual</p>
+   <p>🖥️ Tela cheia: use o botão ⛶ na barra superior</p>
+   <p class="small">Esta versão é uma interface web. Ainda não há uma máquina Windows remota conectada.</p>
+   <button onclick="shutdown()">Desligar CloudWin</button>
+  `);
  }
 }
 
-function saveNote(){
- data.files['Anotações.txt']=document.getElementById('note').value;
- save();
- alert('Salvo!');
+function browserGo(e){
+ e.preventDefault();
+ const url=normalizeUrl(document.getElementById('addressInput').value);
+ if(url)window.open(url,'_blank','noopener');
 }
 
-function newFile(){
- let name=document.getElementById('newName').value.trim();
+function escapeHtml(s){
+ return String(s).replace(/[&<>"']/g,c=>({
+  '&':'&amp;',
+  '<':'&lt;',
+  '>':'&gt;',
+  '"':'&quot;',
+  "'":'&#39;'
+ }[c]));
+}
+
+function createFile(e){
+ e.preventDefault();
+ const name=document.getElementById('newFileName').value.trim();
+
  if(!name)return;
- if(name in data.files){alert('Arquivo já existe!');return;}
- data.files[name]='';
- save();
+
+ if(state.files[name]!==undefined){
+  alert('Esse arquivo já existe.');
+  return;
+ }
+
+ state.files[name]='';
+ persist();
  openApp('files');
 }
 
-function readFile(name){
- show(name,`
-  <textarea id="fileText">${safe(data.files[name]||'')}</textarea>
-  <button onclick="saveFile(${JSON.stringify(name)})">Salvar</button>`);
+function editFile(name){
+ showWindow(name,`
+  <textarea id="fileEditor" style="width:100%;height:65%;padding:10px">${escapeHtml(state.files[name]||'')}</textarea>
+  <p><button onclick="saveFile(${JSON.stringify(name)})">Salvar arquivo</button></p>
+ `);
 }
 
 function saveFile(name){
- data.files[name]=document.getElementById('fileText').value;
- save();
+ state.files[name]=document.getElementById('fileEditor').value;
+ persist();
  alert('Arquivo salvo!');
-}
-
-function calculate(){
- try{
-  let exp=document.getElementById('expression').value;
-  if(!/^[0-9+\-*/().%\s]+$/.test(exp))throw Error();
-  let result=Function('"use strict";return ('+exp+')')();
-  document.getElementById('result').textContent='Resultado: '+result;
- }catch(e){
-  document.getElementById('result').textContent='Conta inválida';
- }
-}
-
-function runCommand(){
- let input=document.getElementById('command');
- let cmd=input.value.trim().toLowerCase();
- let result='';
-
- if(cmd==='help')result='Comandos: help, dir, date, time, ver, cls, shutdown';
- else if(cmd==='dir')result=Object.keys(data.files).join(', ');
- else if(cmd==='date')result=new Date().toLocaleDateString();
- else if(cmd==='time')result=new Date().toLocaleTimeString();
- else if(cmd==='ver')result='CloudWin 11';
- else if(cmd==='cls'){
-  document.getElementById('output').innerHTML='';
-  input.value='';
-  return;
- }
- else if(cmd==='shutdown'){shutdown();return;}
- else result='Comando não reconhecido.';
-
- document.getElementById('output').innerHTML+='<p>&gt; '+safe(cmd)+'<br>'+safe(result)+'</p>';
- input.value='';
+ openApp('files');
 }
 </script>
 
